@@ -19,12 +19,12 @@ pub struct RegisterEmitter<'info> {
     #[account(
       init_if_needed,
       payer = owner,
+      space = ForeignEmitter::INIT_SPACE + 8,
       seeds = [
         ForeignEmitter::SEED_PREFIX,
         &chain.to_le_bytes()[..]
       ],
-      bump,
-      space = ForeignEmitter::INIT_SPACE
+      bump
     )]
     /// Foreign Emitter account. Create this account if an emitter has not been
     /// registered yet for this Wormhole chain ID. If there already is an

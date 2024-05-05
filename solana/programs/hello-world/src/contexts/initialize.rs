@@ -4,9 +4,9 @@ use wormhole_anchor_sdk::wormhole::{
     SequenceTracker, INITIAL_SEQUENCE, SEED_PREFIX_EMITTER,
 };
 
-use crate::{program::HelloWorld, states::Config, HelloWorldMessage, states::WormholeEmitter};
+use crate::{program::HelloWorld, states::Config, states::WormholeEmitter, HelloWorldMessage};
 
-pub const SEED_PREFIX_SENT: &[u8; 4] = b"sent";
+pub const SEED_PREFIX_SENT: &[u8] = b"sent";
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -16,13 +16,11 @@ pub struct Initialize<'info> {
     #[account(
       init,
       payer = owner,
+      space = Config::INIT_SPACE + 8,
       seeds = [Config::SEED_PREFIX],
       bump,
-      space = Config::INIT_SPACE
     )]
     pub config: Account<'info, Config>,
-
-    pub wormhole_program: Program<'info, Wormhole>,
 
     #[account(
       mut,
@@ -45,7 +43,7 @@ pub struct Initialize<'info> {
       payer = owner,
       seeds = [WormholeEmitter::SEED_PREFIX],
       bump,
-      space = WormholeEmitter::INIT_SPACE
+      space = WormholeEmitter::INIT_SPACE + 8
     )]
     pub wormhole_emitter: Account<'info, WormholeEmitter>,
 
@@ -79,6 +77,8 @@ pub struct Initialize<'info> {
 
     pub rent: Sysvar<'info, Rent>,
 
+    pub wormhole_program: Program<'info, Wormhole>,
+
     pub system_program: Program<'info, System>,
 }
 
@@ -89,18 +89,19 @@ impl<'info> Initialize<'info> {
         // Set the owner of the config (effectively the owner of the program)
         config.owner = self.owner.key();
 
-        // Set wormhole related addresses
+        // Set Wormhole related addresses.
         {
             let wormhole = &mut config.wormhole;
 
-            // wormhole::BridgeData (Wormhole's program data)
+            // wormhole::BridgeData (Wormhole's program data).
             wormhole.bridge = self.wormhole_bridge.key();
 
             // wormhole::FeeCollector (lamports collector for posting
             // messages).
             wormhole.fee_collector = self.wormhole_fee_collector.key();
 
-            // wormhole::SequenceTracker (tracks # of messages posted by this program)
+            // wormhole::SequenceTracker (tracks # of messages posted by this
+            // program).
             wormhole.sequence = self.wormhole_sequence.key();
         }
 

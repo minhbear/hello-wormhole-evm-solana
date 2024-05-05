@@ -1,13 +1,13 @@
-pub mod contexts;
-pub mod states;
-pub mod message;
 pub mod common;
+pub mod contexts;
+pub mod message;
+pub mod states;
 
 pub use contexts::*;
-pub use states::*;
 pub use message::*;
+pub use states::*;
 
-declare_id!("Evhd16H7Qkcbh3tWP9dyBSLMxBKGVyM9QQPM83xZJEaa");
+declare_id!("2NV1iSwqoG8iKpCSQEyG2e2je46djm8jr9KqYnLgwt5z");
 
 #[program]
 pub mod hello_world {
@@ -39,11 +39,10 @@ pub mod hello_world {
     pub fn register_emitter(
         ctx: Context<RegisterEmitter>,
         chain: u16,
-        address: [u8; 32]
+        address: [u8; 32],
     ) -> Result<()> {
         ctx.accounts.register_emitter(chain, address)
     }
-
 
     /// This instruction posts a Wormhole message of some arbitrary size
     /// in the form of bytes ([Vec<u8>]). The message is encoded as
